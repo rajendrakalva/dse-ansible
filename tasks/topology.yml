@@ -1,0 +1,5 @@
+- name: configuring multi-dc
+  template: src=templates/cassandra-topology.properties dest=/etc/dse/cassandra/cassandra-topology.properties
+
+- name: setting multi-dc-snitch
+  shell: sed -i 's/endpoint_snitch:.*/endpoint_snitch:\ PropertyFileSnitch/g' /etc/dse/cassandra/cassandra.yaml

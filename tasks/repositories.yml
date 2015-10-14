@@ -1,0 +1,2 @@
+- name: Adding Datastax Repo
+  copy: src=/root/files/datastax.repo dest=/etc/yum.repos.d/datastax.repo owner=root group=root
