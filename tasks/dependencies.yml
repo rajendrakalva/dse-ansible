@@ -18,11 +18,12 @@
   - /opt/jna-3.4.0-4.el5.x86_64.rpm
 
 - name: Install OracleJDK to Alternatives
-  shell: /usr/sbin/alternatives --install /usr/bin/java java /usr/java/default/bin/java 20000 && touch /root/.installalternatives
-  args:
-    creates: /root/.installalternatives
+  alternatives: name=java path=/usr/java/default/bin/java
+  #shell: /usr/sbin/alternatives --install /usr/bin/java java /usr/java/default/bin/java 20000 && touch /root/.installalternatives
+  #args:
+  #  creates: /root/.installalternatives
 
-- name: Set OracleJDK to default
-  shell: /usr/sbin/alternatives --set java /usr/java/default/bin/java && touch /root/.setalternatives
-  args:
-    creates: /root/.setalternatives
+#- #name: Set OracleJDK to default
+  #shell: /usr/sbin/alternatives --set java /usr/java/default/bin/java && touch /root/.setalternatives
+  #args:
+  #  creates: /root/.setalternatives
