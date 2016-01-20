@@ -1,0 +1,64 @@
+- hosts: localhost
+  connection: local
+  gather_facts: no
+  vars_files:
+    - vars/new_azure.yml
+  tasks:
+
+    - name:     Configure Azure ARM mode
+      command:  azure config mode arm
+
+    - name:     Create NIC Cards
+      command:  azure network nic create -k '{{ subnet }}' -m '{{ virtual_network }}' -a '{{ item.value.ip }}' '{{ resource_group }}' '{{ item.key }}'_NIC_CARD '{{ location }}' -p phanindra
+      register: nic
+      ignore_errors: true
+      with_dict: "{{ new_vms }}"
+
+    - name: Create VM
+      command: azure vm create -f '{{ item.key }}'_NIC_CARD -Q '{{ image }}' -u '{{ username }}' -p '{{ password }}' -z '{{ vm_size }}' -F '{{ virtual_network }}' -j '{{ subnet }}' -o '{{ storage_account }}' '{{ resource_group }}' '{{ item.key }}' '{{ location }}' linux
+      register: vm
+      ignore_errors: true
+      when: nic|success or nic.results[0].stderr.find('already exists') != -1
+      with_dict: "{{ new_vms }}"
+
+    - name: Adding data disk - I
+      command: azure vm disk attach-new -g '{{ resource_group }}' -n '{{ item.key }}' -z '{{ data_disk_size }}' -o '{{ storage_account }}' -d '{{ item.key }}'_data01
+      register: disk
+      ignore_errors: true
+      when: vm|success or vm.result[0].stderr.find('already exists') != -1
+      with_dict: "{{ new_vms }}"
+
+    - name: Adding data disk - II
+      command: azure vm disk attach-new -g '{{ resource_group }}' -n '{{ item.key }}' -z '{{ data_disk_size }}' -o '{{ storage_account }}' -d '{{ item.key }}'_data02
+      ignore_errors: true
+      when: disk|success or disk.result[0].stderr.find('already exists') != -1
+      with_dict: "{{ new_vms }}"
+      
+    - name: Add new instance to host group
+      add_host:
+        hostname: '{{ item.value.ip }}'
+        groupname: launched
+      with_dict: '{{ new_ips }}'
+
+    - name: check for vm to be running
+      local_action:
+       module: wait_for
+       host: "{{ item.value.ip }}"
+       search_regex: OpenSSH
+       port: 22
+       state: started
+       delay: 30
+      with_dict: '{{ new_ips }}'
+      delegate_to: 127.0.0.2
+
+- hosts: launched
+  remote_user: '{{ username }}'
+  vars_files:
+    - vars/new_azure.yml
+  gather_facts: no
+  tasks:
+    - name: create a file
+      command: /bin/touch /home/phanindra/sample.txt
+#    - include: dse-ansible/tasks/dependencies.yml
+#    - include: dse-ansible/tasks/repositories.yml
+#    - include: dse-ansible/tasks/dse-install.yml
