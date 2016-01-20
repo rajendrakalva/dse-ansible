@@ -1,7 +1,7 @@
-- include_vars: '/root/dse-deployer/defaults/main.yml'
+- include_vars: '/Users/phanindra/Development/dse-ansible/defaults/main.yml'
 - name: installing datastax enterprise
   yum: name=dse-full-4.5.8-1 state=installed
   register: dse
 
 - name: configuring datastax enterprise
-  template: src=templates/cassandra.yaml.j2 dest=/etc/dse/cassandra/cassandra.yaml
+  template: src=/Users/phanindra/Development/dse-ansible/templates/cassandra.yaml.j2 dest=/etc/dse/cassandra/cassandra.yaml
