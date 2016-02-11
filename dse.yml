@@ -1,11 +1,14 @@
 ---
 - hosts: all
-  user: root
-  sudo: True
+  user: phanindra
+  become: yes
+  become_user: root
+  vars_files:
+    - vars/dse_var.yml
   tasks:
 
-  - include: tasks/dependencies.yml
-  - include: tasks/repositories.yml
-#  - include: tasks/java-install.yml
+#  - include: tasks/dependencies.yml
+#  - include: tasks/repositories.yml
   - include: tasks/dse-install.yml
+#  - include: tasks/linux-prerequisites.yml
 #  - include: tasks/start-dse.yml

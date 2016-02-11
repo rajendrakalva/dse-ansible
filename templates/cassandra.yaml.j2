@@ -7,7 +7,7 @@
 
 # The name of the cluster. This is mainly used to prevent machines in
 # one logical cluster from joining another.
-cluster_name: 'IhsPcfDev'
+cluster_name: '{{ dse_config.cluster_name }}'
 
 # This defines the number of tokens randomly assigned to this node on the ring
 # The more tokens, relative to other nodes, the larger the proportion of data
@@ -22,7 +22,7 @@ cluster_name: 'IhsPcfDev'
 #
 # If you already have a cluster with 1 token per node, and wish to migrate to
 # multiple tokens per node, see http://wiki.apache.org/cassandra/Operations
-num_tokens: 64
+num_tokens: {{ dse_config.num_tokens }}
 
 # initial_token allows you to specify tokens manually.  While you can use # it with
 # vnodes (num_tokens > 1, above) -- in which case you should provide a
@@ -34,11 +34,11 @@ num_tokens: 64
 # May either be "true" or "false" to enable globally, or contain a list
 # of data centers to enable per-datacenter.
 # hinted_handoff_enabled: DC1,DC2
-hinted_handoff_enabled: true
+hinted_handoff_enabled: '{{ dse_config.hinted_handoff_enabled }}'
 # this defines the maximum amount of time a dead host will have hints
 # generated.  After it has been dead this long, new hints for it will not be
 # created until it has been seen alive and gone down again.
-max_hint_window_in_ms: 10800000 # 3 hours
+max_hint_window_in_ms: '{{ dse_config.max_hint_window_in_ms }}' # 3 hours
 # Maximum throttle in KBs per second, per delivery thread.  This will be
 # reduced proportionally to the number of nodes in the cluster.  (If there
 # are two nodes in the cluster, each delivery thread will use the maximum
@@ -67,7 +67,7 @@ batchlog_replay_throttle_in_kb: 1024
 #   through Kerberos. Additional configuration is required in dse.yaml
 # - com.datastax.bdp.cassandra.auth.LdapAuthenticator For external authentication
 #   through Ldap. Additional configuration is required in dse.yaml
-authenticator: AllowAllAuthenticator
+authenticator: {{ dse_config.authenticator }}
 #authenticator: com.datastax.bdp.cassandra.auth.KerberosAuthenticator
 #authenticator: com.datastax.bdp.cassandra.auth.LdapAuthenticator
 
@@ -78,7 +78,7 @@ authenticator: AllowAllAuthenticator
 # - AllowAllAuthorizer allows any action to any user - set it to disable authorization.
 # - CassandraAuthorizer stores permissions in system_auth.permissions table. Please
 #   increase system_auth keyspace replication factor if you use this authorizer.
-authorizer: AllowAllAuthorizer
+authorizer: {{ dse_config.authorizer }}
 
 # Validity period for permissions cache (fetching permissions can be an
 # expensive operation depending on the authorizer, CassandraAuthorizer is
@@ -104,20 +104,21 @@ permissions_validity_in_ms: 2000
 # compatibility include RandomPartitioner, ByteOrderedPartitioner, and
 # OrderPreservingPartitioner.
 #
-partitioner: org.apache.cassandra.dht.Murmur3Partitioner
+partitioner: {{ dse_config.partitioner }}
 
 # Directories where Cassandra should store data on disk.  Cassandra
 # will spread data evenly across them, subject to the granularity of
 # the configured compaction strategy.
 # If not set, the default directory is $CASSANDRA_HOME/data/data.
 data_file_directories:
-     - /var/lib/cassandra/data01
-     - /var/lib/cassandra/data02
+{% for directory in dse_config.data_file_directories %}
+    - {{ directory }}
+{% endfor %}
 
 # commit log.  when running on magnetic HDD, this should be a
 # separate spindle than the data directories.
 # If not set, the default directory is $CASSANDRA_HOME/data/commitlog.
-commitlog_directory: /var/lib/cassandra/commitlog
+commitlog_directory: {{ dse_config.commitlog_directory }}
 
 # policy for data disk failures:
 # die: shut down gossip and Thrift and kill the JVM for any fs errors or
@@ -273,7 +274,7 @@ seed_provider:
       parameters:
           # seeds is actually a comma-delimited list of addresses.
           # Ex: "<ip1>,<ip2>,<ip3>"
-          - seeds: "10.33.155.11,10.33.155.12,10.33.155.13,10.33.155.14,10.33.155.15,10.33.155.31,10.33.155.32,10.33.155.33"
+          - seeds: "{{ dse_config.seeds }}"
 
 # For workloads with more data than can fit in memory, Cassandra's
 # bottleneck will be reads that need to fetch data from
@@ -286,9 +287,9 @@ seed_provider:
 # On the other hand, since writes are almost never IO bound, the ideal
 # number of "concurrent_writes" is dependent on the number of cores in
 # your system; (8 * number_of_cores) is a good rule of thumb.
-concurrent_reads: 32
-concurrent_writes: 128
-concurrent_counter_writes: 32
+concurrent_reads: {{ dse_config.concurrent_reads }}
+concurrent_writes: {{ dse_config.concurrent_writes }}
+concurrent_counter_writes: {{ dse_config.concurrent_counter_writes }}
 
 # Total memory to use for sstable-reading buffers.  Defaults to
 # the smaller of 1/4 of heap or 512MB.
@@ -325,7 +326,7 @@ memtable_allocation_type: heap_buffers
 # segment multiple), Cassandra will flush every dirty CF in the oldest
 # segment and remove it.  So a small total commitlog space will tend
 # to cause more flush activity on less-active columnfamilies.
-commitlog_total_space_in_mb: 12288
+commitlog_total_space_in_mb: {{ dse_config.commitlog_total_space_in_mb }}
 
 # This sets the amount of memtable flush writer threads.  These will
 # be blocked by disk io, and each one will hold a memtable in memory
@@ -357,7 +358,7 @@ index_summary_resize_interval_in_minutes: 60
 # buffers. Enable this to avoid sudden dirty buffer flushing from
 # impacting read latencies. Almost always a good idea on SSDs; not
 # necessarily on platters.
-trickle_fsync: false
+trickle_fsync: {{ dse_config.trickle_fsync }}
 trickle_fsync_interval_in_kb: 10240
 
 # TCP port, for commands and data
@@ -386,13 +387,15 @@ ssl_storage_port: 7001
 # you can specify which should be chosen using listen_interface_prefer_ipv6. If false the first ipv4
 # address will be used. If true the first ipv6 address will be used. Defaults to false preferring
 # ipv4. If there is only one address it will be selected regardless of ipv4/ipv6.
-listen_address: 10.33.155.33
+
+listen_address: {{ ansible_eth0.ipv4.address }}
+
 # listen_interface: eth0
 # listen_interface_prefer_ipv6: false
 
 # Address to broadcast to other Cassandra nodes
 # Leaving this blank will set it to the same value as listen_address
-# broadcast_address: 1.2.3.4
+# broadcast_address: {{ dse_config.trickle_fsync }}
 
 # Internode authentication backend, implementing IInternodeAuthenticator;
 # used to allow/disallow connections from peer nodes.
@@ -444,7 +447,9 @@ start_rpc: true
 # you can specify which should be chosen using rpc_interface_prefer_ipv6. If false the first ipv4
 # address will be used. If true the first ipv6 address will be used. Defaults to false preferring
 # ipv4. If there is only one address it will be selected regardless of ipv4/ipv6.
-rpc_address: 10.33.155.33
+
+rpc_address: '{{ ansible_eth0.ipv4.address }}'
+
 # rpc_interface: eth1
 # rpc_interface_prefer_ipv6: false
 
@@ -516,19 +521,19 @@ thrift_framed_transport_size_in_mb: 15
 # flushed or streamed locally in a backups/ subdirectory of the
 # keyspace data.  Removing these links is the operator's
 # responsibility.
-incremental_backups: false
+incremental_backups: {{ dse_config.incremental_backups }}
 
 # Whether or not to take a snapshot before each compaction.  Be
 # careful using this option, since Cassandra won't clean up the
 # snapshots for you.  Mostly useful if you're paranoid when there
 # is a data format change.
-snapshot_before_compaction: false
+snapshot_before_compaction: {{ dse_config.snapshot_before_compaction }}
 
 # Whether or not a snapshot is taken of the data before keyspace truncation
 # or dropping of column families. The STRONGLY advised default of true
 # should be used to provide data safety. If you set this flag to false, you will
 # lose data on truncation or drop.
-auto_snapshot: true
+auto_snapshot: {{ dse_config.auto_snapshot }}
 
 # When executing a scan, within or across a partition, we need to keep the
 # tombstones seen in memory so we can return them to the coordinator, which
@@ -539,8 +544,8 @@ auto_snapshot: true
 # Adjust the thresholds here if you understand the dangers and want to
 # scan more tombstones anyway.  These thresholds may also be adjusted at runtime
 # using the StorageService mbean.
-tombstone_warn_threshold: 1000
-tombstone_failure_threshold: 100000
+tombstone_warn_threshold: {{ dse_config.tombstone_warn_threshold }}
+tombstone_failure_threshold: {{ dse_config.tombstone_failure_threshold }}
 
 # Granularity of the collation index of rows within a partition.
 # Increase if your rows are large, or if you have a very large
@@ -638,7 +643,7 @@ cross_node_timeout: false
 
 # phi value that must be reached for a host to be marked down.
 # most users should never need to adjust this.
-# phi_convict_threshold: 8
+# phi_convict_threshold: {{ dse_config.phi_convict_threshold }}
 
 # endpoint_snitch -- Set this to a class that implements
 # IEndpointSnitch.  The snitch has two functions:
@@ -694,7 +699,7 @@ cross_node_timeout: false
 #
 # You can use a custom Snitch by setting this to the full class name
 # of the snitch, which will be assumed to be on your classpath.
-endpoint_snitch: GossipingPropertyFileSnitch
+endpoint_snitch: {{ dse_config.endpoint_snitch }}
 
 # controls how often to perform the more expensive part of host score
 # calculation
@@ -767,7 +772,7 @@ request_scheduler: org.apache.cassandra.scheduler.NoScheduler
 # http://download.oracle.com/javase/6/docs/technotes/guides/security/jsse/JSSERefGuide.html#CreateKeystore
 #
 server_encryption_options:
-    internode_encryption: none
+    internode_encryption: {{ dse_config.internode_encryption }}
     keystore: resources/dse/conf/.keystore
     keystore_password: cassandra
     truststore: resources/dse/conf/.truststore
@@ -781,7 +786,7 @@ server_encryption_options:
 
 # enable or disable client/server encryption.
 client_encryption_options:
-    enabled: false
+    enabled: {{ dse_config.client_encryption_options }}
     keystore: resources/dse/conf/.keystore
     keystore_password: cassandra
     # require_client_auth: false

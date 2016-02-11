@@ -1,0 +1,42 @@
+disk_additional_disks:
+- disk: /dev/sdc
+  fstype: ext4
+  mount_options: defaults
+  mount: /mnt/data01
+  link_dir: /var/lib/cassandra/data01
+
+- disk: /dev/sdd
+  fstype: ext4
+  mount_options: defaults
+  mount: /mnt/data02
+  link_dir: /var/lib/cassandra/data02
+
+dse_config:
+   cluster_name: 'IHS_Cluster'
+   seeds: '192.168.1.1'
+   authenticator: AllowAllAuthenticator
+   authorizer: AllowAllAuthorizer
+   num_tokens: '64'
+   hinted_handoff_enabled: 'true'
+   max_hint_window_in_ms: '10800000'
+   partitioner: 'org.apache.cassandra.dht.Murmur3Partitioner'
+   data_file_directories:
+    - '/var/lib/cassandra/data01'
+    - '/var/lib/cassandra/data02'
+   commitlog_directory: /var/lib/cassandra/commitlog
+   concurrent_reads: 32
+   concurrent_writes: 128
+   concurrent_counter_writes: 32
+   commitlog_total_space_in_mb: 12288
+   trickle_fsync: false
+   broadcast_address: 1.2.3.4
+   internode_authenticator: org.apache.cassandra.auth.AllowAllInternodeAuthenticator
+   incremental_backups: false
+   snapshot_before_compaction: false
+   auto_snapshot: true
+   tombstone_warn_threshold: 1000
+   tombstone_failure_threshold: 100000
+   phi_convict_threshold: 8
+   endpoint_snitch: GossipingPropertyFileSnitch
+   internode_encryption: none
+   client_encryption_options: false

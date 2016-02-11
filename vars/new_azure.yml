@@ -1,5 +1,5 @@
 subscription_id: "3f02f88b-4ab4-4e29-9232-614387b53dd6"
-image: "OpenLogic:CentOS:6.7:latest"
+image: "OpenLogic:CentOS:7.1:7.1.20150410"
 storage_account: "phanistorage2"
 virtual_network: "myVNet"
 username: "phanindra"

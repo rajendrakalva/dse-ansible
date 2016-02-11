@@ -1,7 +1,23 @@
-- include_vars: '/Users/phanindra/Development/dse-ansible/defaults/main.yml'
 - name: installing datastax enterprise
-  yum: name=dse-full-4.5.8-1 state=installed
+  yum: name=dse-full-4.8.3-1 state=installed
   register: dse
 
 - name: configuring datastax enterprise
-  template: src=/Users/phanindra/Development/dse-ansible/templates/cassandra.yaml.j2 dest=/etc/dse/cassandra/cassandra.yaml
+  template: src=templates/cassandra.yaml.j2 dest=/etc/dse/cassandra/cassandra.yaml
+
+- name: Check the datastax agent version
+  shell: rpm -qa | grep datastax-agent
+  register: datastaxagent_version
+  args:
+    creates: /root/.deleted_datastax_agent
+
+
+- name: Uninstall Latest version of datastax agent
+  shell: rpm -e --nodeps {{ item }} && touch /root/.deleted_datastax_agent
+  with_items: datastaxagent_version.stdout_lines
+  args:
+    creates: /root/.deleted_datastax_agent
+
+
+- name: installing datastax agent
+  yum: name='{{ datastax_agent_version }}' state=installed

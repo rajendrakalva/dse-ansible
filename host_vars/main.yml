@@ -1,3 +1,0 @@
-config:
-   cluster_name: 'DSE Test'
-   seeds: '192.168.1.1'
