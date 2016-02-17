@@ -104,6 +104,9 @@ if [ $SPARK_NODES -gt 0 ]; then
     create_instance "spark"
 
 fi
+
+run_ansible
+
 #azure login -u phanindra@cloudwick.com
 
 
