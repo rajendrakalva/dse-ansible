@@ -21,7 +21,7 @@
             "value": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCqSt8xyqo0/9SdxlmIW6PRe/86xTWK6nw22hQtbw1Rtu/z/qQjJcO4ZGiciwFmDoGowJLQsGoeJ4oEdiXdk3S3MWUDf8nbXSKsmiY+yWU2pKGPpUY2PgbuVRAc05LxUgxw+aAM2Ker2aatKWN8IQH65ki6sDHexnJC7f9Elm11fCfmFfVb0L26M4MMTXncBLEQ3AL9oL914m2l2KyPQTMqpSj/4Ivz4BsjzCXlKfKwIFb6A1P7HP+Z4KBlxSj2y4jK/a8Y4v/G68vPM4yzEeK0EOZ4CC+g5H+sqRboFKktTR6y5UMLa+gmIEhOQAvaK/FrCHjR7u4xjqdsQSTclPCJ phanindra@Phanindras-MacBook-Pro.local"
         },
         "vmNamePrefix": {
-            "value": "AnsibleTechnologyVM"
+            "value": "AnsibleTechnologySOLRVM"
         },
         "vmSize": {
             "value": "Standard_A1"

@@ -15,11 +15,11 @@
             }
         },
         "sshKeyData": {
-      "type": "string",
-      "metadata": {
-        "description": "SSH rsa public key file as a string."
-      }
-    },
+            "type": "string",
+            "metadata": {
+                "description": "SSH rsa public key file as a string."
+            }
+        },
         "OSVersion": {
             "type": "string",
             "defaultValue": "7.1",
@@ -77,8 +77,8 @@
         "dataDiskSize": "1023",
         "imageOffer": "CentOS",
         "imagePublisher": "OpenLogic",
-        "nicName": "NIC",
-        "OSDiskName": "osdisk",
+        "nicName": "SOLRNIC",
+        "OSDiskName": "solrosdisk",
         "sshKeyPath": "[concat('/home/',parameters('adminUsername'),'/.ssh/authorized_keys')]",
         "publicIPAddressType": "Dynamic",
         "storageAccountType": "Standard_LRS",
@@ -179,7 +179,7 @@
                             "diskSizeGB": "[variables('dataDiskSize')]",
                             "lun": 0,
                             "vhd": {
-                                "Uri": "[concat('http://',parameters('newStorageAccountName'),'.blob.core.windows.net/vhds/',concat(parameters('vmNamePrefix'),copyIndex()),'dataDisk1' ,'.vhd')]"
+                                "Uri": "[concat('http://',parameters('newStorageAccountName'),'.blob.core.windows.net/vhds/',concat(parameters('vmNamePrefix'),copyIndex()),'solrdataDisk1' ,'.vhd')]"
                             },
                             "caching": "None",
                             "createOption": "Empty"
@@ -189,7 +189,7 @@
                             "diskSizeGB": "[variables('dataDiskSize')]",
                             "lun": 1,
                             "vhd": {
-                                "Uri": "[concat('http://',parameters('newStorageAccountName'),'.blob.core.windows.net/vhds/',concat(parameters('vmNamePrefix'),copyIndex()),'dataDisk2' ,'.vhd')]"
+                                "Uri": "[concat('http://',parameters('newStorageAccountName'),'.blob.core.windows.net/vhds/',concat(parameters('vmNamePrefix'),copyIndex()),'solrdataDisk2' ,'.vhd')]"
                             },
                             "caching": "None",
                             "createOption": "Empty"

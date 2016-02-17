@@ -6,7 +6,10 @@
   - /mnt/commitlog
   register: created_directories
 
-
+- name: Set swappiness to 1
+  sysctl: name=vm.swappiness value=0 state=present
+  tags:
+    - configuration
 #- debug: var=Data_directories.results[0].path
 
 #- name: Check the newly added disks

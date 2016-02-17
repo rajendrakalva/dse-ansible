@@ -1,0 +1,213 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "newStorageAccountName": {
+            "type": "string",
+            "metadata": {
+                "description": "Unique DNS Name for the Storage Account where the Virtual Machine's disks will be placed."
+            }
+        },
+        "adminUsername": {
+            "type": "string",
+            "metadata": {
+                "description": "User name for the Virtual Machine."
+            }
+        },
+        "sshKeyData": {
+            "type": "string",
+            "metadata": {
+                "description": "SSH rsa public key file as a string."
+            }
+        },
+        "OSVersion": {
+            "type": "string",
+            "defaultValue": "7.1",
+            "allowedValues": [
+                "7.1"
+            ]
+        },
+        "vmCount": {
+            "type": "int",
+            "defaultValue": 1
+        },
+        "virtualNetworkName": {
+            "type": "string",
+            "metadata": {
+                "description": "Virtual Network Name"
+            }
+        },
+        "virtualNetworkResourceGroup": {
+            "type": "string",
+            "metadata": {
+                "description": "Resource Group VNET is deployed in"
+          }
+        },
+        "vmNamePrefix": {
+            "type": "string",
+            "metadata": {
+                "description": "Virtual Machine Name Prefix"
+            }
+        },
+        "vmSize": {
+            "type": "string",
+            "defaultValue": "Standard_A1",
+            "metadata": {
+                "description": "Virtual Machine Size"
+            }
+        },
+        "subnet1Name": {
+            "type": "string",
+            "metadata": {
+              "description": "Name of the subnet inside the VNET"
+            }
+        },
+        "location": {
+            "type": "string",
+            "defaultValue": "West US",
+            "metadata": {
+                "description": "Location"
+            }
+        }
+    },
+    "variables": {
+        "addressPrefix": "10.33.24.0/21",
+        "vnetID": "[resourceId(parameters('virtualNetworkResourceGroup'), 'Microsoft.Network/virtualNetworks', parameters('virtualNetworkName'))]",
+        "subnet1Ref": "[concat(variables('vnetID'),'/subnets/', parameters('subnet1Name'))]",
+        "dataDiskSize": "1023",
+        "imageOffer": "CentOS",
+        "imagePublisher": "OpenLogic",
+        "nicName": "SPARKNIC",
+        "OSDiskName": "sparkosdisk",
+        "sshKeyPath": "[concat('/home/',parameters('adminUsername'),'/.ssh/authorized_keys')]",
+        "publicIPAddressType": "Dynamic",
+        "storageAccountType": "Standard_LRS",
+        "subnetName": "Subnet",
+        "subnetPrefix": "10.33.24.0/24",
+        "vmStorageAccountContainerName": "vhds",
+        "vnetID": "[resourceId('Microsoft.Network/virtualNetworks',parameters('virtualNetworkName'))]"
+    },
+    "resources": [
+      {
+          "type": "Microsoft.Storage/storageAccounts",
+          "name": "[parameters('newStorageAccountName')]",
+          "apiVersion": "2015-05-01-preview",
+          "location": "[parameters('location')]",
+          "tags": {
+              "displayName": "StorageAccount"
+          },
+          "properties": {
+              "accountType": "[variables('storageAccountType')]"
+          }
+      },
+
+        {
+            "apiVersion": "2015-05-01-preview",
+            "type": "Microsoft.Network/networkInterfaces",
+            "name": "[concat(variables('nicName'),copyIndex())]",
+            "location": "[parameters('location')]",
+            "tags": {
+                "displayName": "NetworkInterface"
+            },
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "[concat('ipconfig', copyIndex())]",
+                        "properties": {
+                            "privateIPAllocationMethod": "Dynamic",
+                            "subnet": {
+                                "id": "[variables('subnet1Ref')]"
+                            }
+                        }
+                    }
+                ]
+            },
+            "copy": {
+                "name": "nicCopy",
+                "count": "[parameters('vmCount')]"
+            }
+        },
+        {
+            "apiVersion": "2015-05-01-preview",
+            "copy": {
+                "name": "nodeCopy",
+                "count": "[parameters('vmCount')]"
+            },
+            "dependsOn": [
+                "[concat('Microsoft.Storage/storageAccounts/', parameters('newStorageAccountName'))]",
+                "[concat('Microsoft.Network/networkInterfaces/', concat(variables('nicName'),copyIndex()))]"
+            ],
+            "location": "[parameters('location')]",
+            "name": "[concat(parameters('vmNamePrefix'),copyIndex())]",
+            "properties": {
+                "hardwareProfile": {
+                    "vmSize": "[parameters('vmSize')]"
+                },
+                "osProfile": {
+                    "computername": "[concat(parameters('vmNamePrefix'),copyIndex())]",
+                    "adminUsername": "[parameters('adminUsername')]",
+                    "linuxConfiguration": {
+                      "disablePasswordAuthentication": "true",
+            "ssh": {
+              "publicKeys": [
+                {
+                  "path": "[variables('sshKeyPath')]",
+                  "keyData": "[parameters('sshKeyData')]"
+                }
+              ]
+            }
+          }
+                },
+                "storageProfile": {
+                    "imageReference": {
+                        "publisher": "[variables('imagePublisher')]",
+                        "offer": "[variables('imageOffer')]",
+                        "sku": "[parameters('OSVersion')]",
+                        "version": "latest"
+                    },
+                    "osDisk": {
+                        "name": "osdisk",
+                        "vhd": {
+                            "uri": "[concat('http://',parameters('newStorageAccountName'),'.blob.core.windows.net/',variables('vmStorageAccountContainerName'),'/',concat(variables('OSDiskName'),copyIndex()),'.vhd')]"
+                        },
+                        "caching": "ReadWrite",
+                        "createOption": "FromImage"
+                    },
+                    "dataDisks": [
+                        {
+                            "name": "datadisk1",
+                            "diskSizeGB": "[variables('dataDiskSize')]",
+                            "lun": 0,
+                            "vhd": {
+                                "Uri": "[concat('http://',parameters('newStorageAccountName'),'.blob.core.windows.net/vhds/',concat(parameters('vmNamePrefix'),copyIndex()),'sparkdataDisk1' ,'.vhd')]"
+                            },
+                            "caching": "None",
+                            "createOption": "Empty"
+                        },
+                        {
+                            "name": "datadisk2",
+                            "diskSizeGB": "[variables('dataDiskSize')]",
+                            "lun": 1,
+                            "vhd": {
+                                "Uri": "[concat('http://',parameters('newStorageAccountName'),'.blob.core.windows.net/vhds/',concat(parameters('vmNamePrefix'),copyIndex()),'sparkdataDisk2' ,'.vhd')]"
+                            },
+                            "caching": "None",
+                            "createOption": "Empty"
+                        }
+                    ]
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(variables('nicName'),copyIndex()))]"
+                        }
+                    ]
+                }
+            },
+            "tags": {
+                "displayName": "VirtualMachine"
+            },
+            "type": "Microsoft.Compute/virtualMachines"
+        }
+    ]
+}

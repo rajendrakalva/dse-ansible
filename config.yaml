@@ -1,0 +1,35 @@
+name: "Configuration File for wrapper script"
+Azure_values:
+    resource_group: TechnologyMarkets-RMRG-USWest-Network
+    deploy_params_file: /Users/phanindra/Development/dse-ansible/azure-params.json
+    newStorageAccountName: Technologystorage
+    adminUsername: phanindra
+    virtualNetworkName: Technology_RM_VNET_USWest_Dev
+    virtualNetworkResourceGroup: TechnologyMarkets-RMRG-USWest-Network
+    subnet1Name: Data
+    sshKeyData: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCqSt8xyqo0/9SdxlmIW6PRe/86xTWK6nw22hQtbw1Rtu/z/qQjJcO4ZGiciwFmDoGowJLQsGoeJ4oEdiXdk3S3MWUDf8nbXSKsmiY+yWU2pKGPpUY2PgbuVRAc05LxUgxw+aAM2Ker2aatKWN8IQH65ki6sDHexnJC7f9Elm11fCfmFfVb0L26M4MMTXncBLEQ3AL9oL914m2l2KyPQTMqpSj/4Ivz4BsjzCXlKfKwIFb6A1P7HP+Z4KBlxSj2y4jK/a8Y4v/G68vPM4yzEeK0EOZ4CC+g5H+sqRboFKktTR6y5UMLa+gmIEhOQAvaK/FrCHjR7u4xjqdsQSTclPCJ phanindra@Phanindras-MacBook-Pro.local
+    vmSize: Standard_A1
+    location: West US
+    cluster_info:
+      cassandra:
+        vmCount: 2
+        vmNamePrefix: AnsibleTechnologyVM
+        deploy_name: Ansibletest24
+        template_file: /Users/phanindra/Development/dse-ansible/azure-cassandra-cloud-formation.json
+        params_file: /Users/phanindra/Development/dse-ansible/azure-cassandra-params.json
+      solr:
+        vmCount: 2
+        vmNamePrefix: AnsibleTechnologySolrVM
+        deploy_name: Ansiblesolrtest24
+        template_file: /Users/phanindra/Development/dse-ansible/azure-solr-cloud-formation.json
+        params_file: /Users/phanindra/Development/dse-ansible/azure-solr-params.json
+      spark:
+        vmCount: 0
+        vmNamePrefix: AnsibleTechnologySparkVM
+        deploy_name: Ansiblesparktest24
+        template_file: /Users/phanindra/Development/dse-ansible/azure-spark-cloud-formation.json
+        params_file: /Users/phanindra/Development/dse-ansible/azure-spark-params.json
+
+Ansible_values:
+    hosts_file: /Users/phanindra/Development/dse-ansible/hosts
+    hosts_backup_file: /Users/phanindra/Development/dse-ansible/hosts_backup
