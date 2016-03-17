@@ -2,8 +2,9 @@
 Easily provision DSE cassandra or DSE Search or DSE spark on azure. By default this script creates a vm with centos.
 
 #Prerequisites
-1. Azure Account
+1. Azure Account (Login to azure account before running the script) 
 2. Datastax Enterprise License
+3. shyaml
 
 #Configuration
 
