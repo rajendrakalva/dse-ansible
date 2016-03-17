@@ -11,8 +11,8 @@
 - name: copying jdk and jna file
   copy: src={{ item }} dest=/opt/ owner=root group=root mode="u=rwx,g=rx,o=rx"
   with_fileglob:
-  - /Users/phanindra/Development/dse-ansible/files/jdk-8u65-linux-x64.rpm
-  - /Users/phanindra/Development/dse-ansible/files/jna-3.4.0-4.el5.x86_64.rpm
+  - files/jdk-8u65-linux-x64.rpm
+  - files/jna-3.4.0-4.el5.x86_64.rpm
 
 - name: install java rpm from a local file
   yum: name={{ item }} state=present

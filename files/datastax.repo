@@ -1,5 +1,5 @@
 [datastax]
-baseurl=
+baseurl=http://IHS_Inc.:Pk39wNYP5nTrFaj@rpm.datastax.com/enterprise
 enabled=1
 gpgcheck=0
 name=ISO

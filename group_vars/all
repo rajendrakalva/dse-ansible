@@ -40,3 +40,6 @@ dse_config:
    endpoint_snitch: GossipingPropertyFileSnitch
    internode_encryption: none
    client_encryption_options: false
+   cassandra_max_heap_size: 8G
+   cassandra_heap_newsize: 800MB
+   datastax_agent_version: datastax-agent-5.2.1-1

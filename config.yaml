@@ -1,7 +1,7 @@
 name: "Configuration File for wrapper script"
 Azure_values:
     resource_group: TechnologyMarkets-RMRG-USWest-Network
-    deploy_params_file: /Users/phanindra/Development/dse-ansible/azure-params.json
+    #deploy_params_file: /Users/phanindra/Development/dse-ansible/azure-params.json
     newStorageAccountName: Technologystorage
     adminUsername: phanindra
     virtualNetworkName: Technology_RM_VNET_USWest_Dev
@@ -15,21 +15,21 @@ Azure_values:
         vmCount: 2
         vmNamePrefix: AnsibleTechnologyVM
         deploy_name: Ansibletest24
-        template_file: /Users/phanindra/Development/dse-ansible/azure-cassandra-cloud-formation.json
-        params_file: /Users/phanindra/Development/dse-ansible/azure-cassandra-params.json
+        template_file: azure-templates/azure-cassandra-cloud-formation.json
+        params_file: azure-templates/azure-cassandra-params.json
       solr:
         vmCount: 2
         vmNamePrefix: AnsibleTechnologySolrVM
         deploy_name: Ansiblesolrtest24
-        template_file: /Users/phanindra/Development/dse-ansible/azure-solr-cloud-formation.json
-        params_file: /Users/phanindra/Development/dse-ansible/azure-solr-params.json
+        template_file: azure-templates/azure-solr-cloud-formation.json
+        params_file: azure-templates/azure-solr-params.json
       spark:
         vmCount: 0
         vmNamePrefix: AnsibleTechnologySparkVM
         deploy_name: Ansiblesparktest24
-        template_file: /Users/phanindra/Development/dse-ansible/azure-spark-cloud-formation.json
-        params_file: /Users/phanindra/Development/dse-ansible/azure-spark-params.json
+        template_file: azure-templates/azure-spark-cloud-formation.json
+        params_file: azure-templates/azure-spark-params.json
 
 Ansible_values:
-    hosts_file: /Users/phanindra/Development/dse-ansible/hosts
-    hosts_backup_file: /Users/phanindra/Development/dse-ansible/hosts_backup
+    hosts_file: hosts
+    hosts_backup_file: hosts_backup

@@ -24,6 +24,12 @@ sshKeyData=`cat ./config.yaml | shyaml get-value Azure_values.sshKeyData`
 location=`cat ./config.yaml | shyaml get-value Azure_values.location`
 vmSize=`cat ./config.yaml | shyaml get-value Azure_values.vmSize`
 
+if [ "$SOLR_NODES" -gt 0 ]; then
+sed -i '' "s/.*solr_enabled.*/        solr_enabled: 1/g" group_vars/solr
+fi
+if [ "$SPARK_NODES" -gt 0 ]; then
+sed -i '' "s/.*spark_enabled.*/        spark_enabled: 1/g" group_vars/spark
+fi
 
 
 
@@ -82,10 +88,10 @@ done
 
 }
 
-function run_ansible(
+function run_ansible(){
 
-      ansible-playbook -i $HOSTS_FILE /Users/phanindra/Development/dse-ansible/dse.yml
-)
+      ansible-playbook -i $HOSTS_FILE dse.yml
+}
 
 if [ $CASSANDRA_NODES -gt 0 ]; then
 

@@ -3,5 +3,5 @@
   register: repo_file
 
 - name: Adding Datastax Repo
-  copy: src=/Users/phanindra/Development/dse-ansible/files/datastax.repo dest=/etc/yum.repos.d/datastax.repo owner=root group=root
-  when: repo_file.stat.exists == False 
+  copy: src=files/datastax.repo dest=/etc/yum.repos.d/datastax.repo owner=root group=root
+  when: repo_file.stat.exists == False

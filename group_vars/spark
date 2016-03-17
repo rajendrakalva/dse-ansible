@@ -1,0 +1,2 @@
+spark_config:
+        spark_enabled: 0

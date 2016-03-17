@@ -3,7 +3,12 @@
   register: dse
 
 - name: configuring datastax enterprise
-  template: src=templates/cassandra.yaml.j2 dest=/etc/dse/cassandra/cassandra.yaml
+  template: src={{item.src}} dest={{item.dest}}
+  with_items:
+      - { src: 'templates/cassandra.yaml.j2', dest: '/etc/dse/cassandra/cassandra.yaml' }
+      - { src: 'templates/cassandra-env.sh.j2', dest: '/etc/dse/cassandra/cassandra-env.sh' }
+      - { src: 'templates/dse.j2', dest: '/etc/default/dse' }
+      - { src: 'templates/dse.yaml.j2', dest: '/etc/dse/dse.yaml' }
 
 - name: Check the datastax agent version
   shell: rpm -qa | grep datastax-agent
@@ -20,4 +25,4 @@
 
 
 - name: installing datastax agent
-  yum: name='{{ datastax_agent_version }}' state=installed
+  yum: name='{{ dse_config.datastax_agent_version }}' state=installed

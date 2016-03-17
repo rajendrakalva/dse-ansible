@@ -4,11 +4,13 @@
   become: yes
   become_user: root
   vars_files:
-    - vars/dse_var.yml
+    - group_vars/all
+    - group_vars/spark
+    - group_vars/solr
   tasks:
 
-  - include: tasks/dependencies.yml
-  - include: tasks/repositories.yml
+#  - include: tasks/dependencies.yml
+#  - include: tasks/repositories.yml
   - include: tasks/dse-install.yml
   - include: tasks/linux-prerequisites.yml
 #  - include: tasks/start-dse.yml
